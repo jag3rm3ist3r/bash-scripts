@@ -1,6 +1,9 @@
-# Ignore my sandbox file.
+# This file.
+.gitignore
+
+# Sandbox file.
 sandbox
 
-# Ignore my template file.
+# Template file.
 bashTemplate
 
