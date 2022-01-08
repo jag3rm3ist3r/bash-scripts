@@ -37,4 +37,5 @@ bspc monitor -f primary
 # Set wallpaper to last set wallpaper, but not using Wal because there are multiple monitors.
 ~/.fehbg.bak
 
+
 exit 0
