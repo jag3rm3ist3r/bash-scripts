@@ -1,0 +1,42 @@
+#!/bin/bash
+# ________________________________
+#
+# Name:
+# f_exitIfNotRoot
+#
+# Author:
+# Matthew James Hulme
+#
+# Usage:
+# thisDirectory=${BASH_SOURCE%/*}
+# [ -r $thisDirectory"/f_exitIfNotRoot" ] && source $thisDirectory"/f_exitIfNotRoot"
+# exitIfNotRoot
+#
+# Description:
+# Function for use elsewhere.
+# Exits with code of 1 if not root.
+#
+# Notes:
+#
+# Dependencies:
+# isRoot
+# printDots
+# ________________________________
+#
+thisDirectory=${BASH_SOURCE%/*}
+[ -r $thisDirectory"/f_isRoot" ] && source $thisDirectory"/f_isRoot"
+[ -r $thisDirectory"/f_printDots" ] && source $thisDirectory"/f_printDots"
+
+function exitIfNotRoot()
+{
+	if [[ "$(isRoot)" -eq "1" ]];then
+	{
+		echo "Must be root!"
+		echo -n "Aborting"
+		printDots "3" "0.5"
+		echo ""
+		exit 1
+	}
+	fi
+	return 0
+}

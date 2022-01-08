@@ -1,0 +1,78 @@
+#!/bin/bash
+
+echo "THIS SCRIPT IS CURRENTLY BROKEN"
+exit 1
+
+# ________________________________
+# 
+# Name:
+# setup_LaTeX_environment
+#
+# Author:
+# Matthew James Hulme
+#
+# Usage:
+# setup_LaTeX_environment [filename.tex]
+#
+# Description:
+# Opens a .tex document next to a live preview of the pdf next to it.
+#
+# Notes:
+# This script assumes that the window manager is bspwm and it is being run from
+#+inside of tmux.
+#
+# Dependencies:
+# bspwm
+# tmux
+# mupdf
+# mupdf.inotify script
+# entr
+#
+# ________________________________
+#
+
+
+
+# Make sure there are arguments.
+[[ $# -eq 0 ]] && echo 'Not enough arguments.' && exit 1
+
+# If we don't make the file exist first then things break.
+touch $1
+
+# pdflatex likes to dump it's output in the current directory so we're going to
+#+the directory that the file is in to consolidate the mess that pdflatex makes.
+cd $(dirname $1)
+
+# Work out what the pdf's filename will be since pdflatex just changes the
+#+suffix.
+PDFNAME="$(echo $1 | sed '{s/\.tex/\.pdf/g}')"
+
+# Compile every time the file is written to.
+# Currently this script will not clean up this entr instance when exiting,
+#+I need to add a trap later to make sure this is cleaned up.
+# !!!   BACKGROUND PROCESS   !!!
+echo $1 | entr -n pdflatex $1 &
+pid=$!
+echo "entr PID: ${pid}"
+# We need to make sure the entr instance is killed after we're done with it.
+trap "kill ${pid}" EXIT SIGTERM SIGINT
+
+# Open the file in a split pane in tmux, on the right.
+tmux split-window -hc "$(dirname $1)" nvim $1
+
+# Make sure the editor is in the middle of the screen,
+#+with the viewer to the right and the compiler to the left.
+bspc node --presel-dir east
+bspc node --presel-ratio 0.7
+
+# This sleep line is here to stop pdflatex interfering with mupdf,
+#+a delay of 0.1 seems to be sufficient.
+sleep 0.1
+# It is worth noting here that mupdf doesn't seem to like being used with entr,
+#+this is why it's being run through the mupdf.inotify script.
+# This is a script that I found to update the contents of mupdf whenever the
+#+open file is written to.
+# File:			~/Documents/Code/Bash/mupdf.inotify
+# Symlink:		~/bin/mupdf.inotify
+mupdf.inotify ${PDFNAME}
+

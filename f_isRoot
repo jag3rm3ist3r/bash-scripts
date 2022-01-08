@@ -1,0 +1,37 @@
+#!/bin/bash
+# ________________________________
+# 
+# Name:
+# f_isRoot
+#
+# Usage:
+# thisDirectory=${BASH_SOURCE%/*}
+# [ -r $thisDirectory"/f_isRoot" ] && source $thisDirectory"/f_isRoot"
+# isRoot
+#
+# Description:
+# Function for use elsewhere.
+# Echoes 0 for root, 1 for not root.
+#
+# Notes:
+# 
+# Dependencies:
+# 
+# ________________________________
+# 
+
+function isRoot() 
+{
+	if [ $(id -u) -eq 0 ]
+	then
+	{
+		echo "0"
+	}
+	else
+	{
+		echo "1"
+	}
+	fi
+	return 0
+}
+

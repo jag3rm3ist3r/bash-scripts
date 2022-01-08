@@ -1,0 +1,49 @@
+#!/bin/bash
+# ________________________________
+# 
+# Name:
+# f_printDots
+#
+# Usage:
+# thisDirectory=${BASH_SOURCE%/*}
+# [ -r $thisDirectory"/f_printDots" ] && source $thisDirectory"/f_printDots"
+# printDots number_of_dots sleep_time
+#
+# Description:
+# Prints '...' with a delay between dots and with
+#+any ammount of dots.
+#
+# Notes:
+# 
+# Dependencies:
+# 
+# ________________________________
+# 
+
+function printDots()
+{
+	if [ "$#" -ne "2" ]; then
+	{
+		echo ""
+		echo 'Unexpected input: ($# != 2)'
+		echo "Usage: printDots number_of_dots sleep_time"
+	}
+	else
+	{
+		local number_of_dots=$1
+		local sleepTime=$2
+		local i=0
+		while [ "$i" -lt "$number_of_dots" ]; do
+		{
+			sleep $sleepTime
+			echo -n "."
+			let i++
+		}
+		done
+		sleep $sleepTime
+	}
+	fi
+	return 0
+}
+
+

@@ -1,0 +1,69 @@
+#!/bin/bash
+# ________________________________
+#
+# Name:
+# autocompilerp
+#
+# Author:
+# Matthew James Hulme
+#
+# Usage:
+# autocompilerp [filename]
+#
+# Description:
+# Automatically compiles the specified file using g++ whenever it is modified.
+#
+# Notes:
+# This should be merged with the original gcc version as most of this code is redundant.
+#
+# Dependencies:
+# entr
+#
+# ________________________________
+#
+
+
+# Check argument quantity.
+if [ $# -lt 1 ]; then
+	echo "At least one argument required."
+	exit 1
+fi
+
+# Check argument sanity.
+if [ ! -e ${1} ]; then
+	echo "${1}: No such file."
+	exit 1
+fi
+
+
+# Arguments
+# Assign $1 a name.
+inputfile=${1}
+
+
+# Variables
+fullpath="$(realpath ${inputfile})"
+basename="$(basename ${inputfile})"
+outname="$(echo ${basename} | sed '{s/\..*$/Compiled/g}')"
+
+
+# cd into the correct directory.
+cd "$(dirname ${fullpath})"
+
+
+# Give the user an opportunity to check the correct file is being compiled.
+echo "# Compiling ${basename} as ${outname}"
+echo "# cd ${PWD}"
+
+
+#echo "${fullpath}" | \
+i=1
+while (( "$#" )); do
+	# Echo the arguments into entr.
+	echo "$(realpath ${1})"
+	# Shifts the arguments left such that $2 is now $1.
+	shift
+done | \
+entr -p bash -c \
+"clear && g++ -J16 -g -o ${outname} ${fullpath} && echo 'Compiled with no errors.'"
+

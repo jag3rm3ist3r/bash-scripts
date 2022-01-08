@@ -1,0 +1,19 @@
+#!/bin/bash
+#file /home/jager/Documents/Code/Bash/rofi_dialog
+
+# This is a hack to get the rofi run dialog to execute things in the terminal
+#+when launched from sxhkd.
+# If launched directly fron sxhkd the -run-shell-command argument doesn't work.
+# This command is also too big and ugly to fit in the sxhkdrc file.
+
+# Variables
+# $1 : Show what? Used in command below.
+
+terminal="urxvt"
+
+rofi -run-shell-command "{terminal} -e /home/jager/Documents/Code/Bash/executeThis {cmd}" \
+-font "Terminus (TTF) Medium 12" -bw 0 \
+-lines 16 -fixed-num-lines 16 -width 100 -padding 1000 -location 0 -regex -show $1
+
+exit 0
+

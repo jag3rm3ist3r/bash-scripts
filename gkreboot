@@ -1,0 +1,4 @@
+gksudo 'reboot'
+
+exit 0
+

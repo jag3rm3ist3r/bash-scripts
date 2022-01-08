@@ -1,0 +1,70 @@
+#!/bin/bash
+# ________________________________
+#
+# Name:
+# tripleterm
+#
+# Author:
+# Matthew James Hulme
+#
+# Usage:
+# tripleterm | tripleterm [directory]
+#
+# Description:
+# Opens three terminals and lays them out vertically within bpswm.
+#
+# Notes:
+#
+# Dependencies:
+# bspwm
+# urxvt
+# tmux
+#
+# ________________________________
+#
+
+
+# cd to default so that all terminals start there.
+cd ${HOME}
+# Check if argument is a directory, if so cd to it instead.
+[ -d "${1}" ] && cd ${1}
+
+
+open_terminal() {
+	urxvt -g 127x31 -e tmux &
+	sleep 0.1
+}
+
+
+echo 1st terminal
+open_terminal
+
+echo Presel east
+bspc node -p east
+
+echo 2nd terminal
+open_terminal
+
+echo Select @parent
+bspc node -f @parent
+
+echo Presel west
+bspc node -p west
+
+echo 3rd terminal
+open_terminal
+
+echo Select biggest.local
+bspc node -f biggest.local
+
+echo Select parent
+bspc node -f @parent
+
+echo Balance nodes
+bspc node -B
+
+echo Select a node
+bspc node -f @1
+
+
+exit 0

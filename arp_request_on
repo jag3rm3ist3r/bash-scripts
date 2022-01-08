@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# ________________________________
+#
+# Name:
+# arp_request_on
+#
+# Author:
+# Matthew James Hulme
+#
+# Usage:
+# arp_request_on
+#
+# Description:
+# Sets the firewall to allow arp requests.
+#
+# Notes:
+# Requires root permissions.
+# I no longer use this script as it was for an ubuntu install.
+#
+# Dependencies:
+# exitIfNotRoot
+#
+# ________________________________
+#
+
+thisDirectory=${BASH_SOURCE%/*}
+[ -r $thisDirectory"/"f_exitIfNotRoot ] && source $thisDirectory"/"f_exitIfNotRoot
+exitIfNotRoot
+
+if [[ $(sudo arptables -L | grep Request | grep DROP) ]]; then
+	sudo arptables -D INPUT --opcode 1 -j DROP
+	sudo arptables -A INPUT --opcode 1 -j ACCEPT
+else
+	echo "Rule not found."
+fi
+
+exit 0
+

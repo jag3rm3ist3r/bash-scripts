@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Script for launching steam such that it has the requred environment varialbes
+#+for itself and games it launches.
+
+
+# Distibution name.
+export DISTRIB_ID="$(lsb_release -a | grep -i distributor | sed '{s/^.*\t//g}')"
+# Distribution version.
+export DISTRIB_RELEASE="$(lsb_release -a | grep -i release | sed '{s/^.*\t//g}')"
+# Distribution version.
+export VERSION_ID="$(lsb_release -a | grep -i release | sed '{s/^.*\t//g}')"
+# dbus needs to be seen by dota2 for the menu to work propperly.
+export DBUS_SESSION_BUS_ADDRESS="$(dbus-daemon --session --print-address --fork)"
+
+
+# Fork steam into the background and suppress output.
+LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so.1 /usr/$LIB/libgpg-error.so' steam "$@" # &>/dev/null &
+
+
+exit 0
+

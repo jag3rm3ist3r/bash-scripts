@@ -1,0 +1,140 @@
+#!/bin/bash
+# ________________________________
+#
+# Name:
+# i3lock_script
+#
+# Author:
+# Matthew James Hulme
+#
+# Usage:
+# i3lock_script
+#
+# Description:
+# This script takes a screenshot, blurs it and adds an overlay then uses it as a
+#+background for the lock screen in i3lock.
+#
+# Notes:
+# This script needs cleaning, it calls some commands multiple times where they
+#+could have been called once.
+# This script is intended for use on 1-3 monitors, but should probably be
+#+replaced by a fork of i3lock that just works with a multihead setup.
+# Sadly i3lock isn't designed to blur multiple monitors and overlay a large 
+#+pattern combined with an image; which is exactly what this script does.
+#
+# Dependencies:
+# i3lock
+#
+# ________________________________
+#
+# Make sure there is an environment variable $HOME before we continue.
+[[ -z ${HOME} ]] && exit 0
+# Constants
+cd_to=${HOME}/tmp/
+tmpbg=${cd_to}TempScrotForLockScreen.png
+tmppat=${cd_to}TempPatternForLockScreen.png
+# I might make this defined by and argument at some point, it's odd having this
+#+hard coded into the script.
+overlay="${HOME}/Pictures/Wallpapers/SYSTEMLOCKED_.png"
+pattern="${HOME}/Pictures/Wallpapers/LockPatternLarge.png"
+
+# Variables
+overallresolution="1920x1080"
+primaryresolution="1920x1080"
+overallx="1920"
+overally="1080"
+primaryx="1920"
+primaryy="1080"
+xoffset="0"
+yoffset="0"
+
+
+function main(){
+	# Make sure the temporary file is removed afterwards no matter what.
+	trap "unlink ${tmpbg};unlink ${tmppat}" EXIT SIGTERM SIGKILL SIGSTOP SIGINT
+
+	# Find the combined resoltion of all displays.
+	overallresolution=$(\
+		xrandr -q | \
+		awk 'FNR == 1 {print}' | \
+		sed "{s/^.*current \(.*\) x \(.*\), .*$/\1x\2/g}"\
+		)
+
+	# Find the resolution of the primary display.
+	primaryresolution=$(\
+		xrandr -q | \
+		grep primary | \
+		sed "{s/^.* primary \(.*\)x\(.*\)+.*+.* .*$/\1x\2/g}"\
+		)
+
+	# !!! BACKGROUND THREAD !!!
+	# Take a screenshot.
+	# Blur the screenshot.
+	ffmpeg \
+		-loglevel quiet \
+		-y \
+		-f x11grab \
+		-s "${overallresolution}" \
+		-i ":0.0" \
+		-vframes 1 \
+		-vf "gblur=sigma=16" \
+		"${tmpbg}" &
+
+	# !!! BACKGROUND THREAD !!!
+	# Create the pattern with the correct resolution.
+	convert -size "${overallresolution}" tile:"${pattern}" "${tmppat}" &
+
+	# Extract the x and y values.
+	overallx=$(echo "$overallresolution" | sed "{s/\(.*\)x.*/\1/g}")
+	overally=$(echo "$overallresolution" | sed "{s/.*x\(.*\)/\1/g}")
+	primaryx=$(echo "$primaryresolution" | sed "{s/\(.*\)x.*/\1/g}")
+	primaryy=$(echo "$primaryresolution" | sed "{s/.*x\(.*\)/\1/g}")
+
+	# Find the difference between the overall resolution of the screenshot compared 
+	#+to the resolution of the primary display.
+	xoffset=$(( ( ${overallx} - ${primaryx} ) / 2 ))
+	yoffset=$(( ( ${overally} - ${primaryy} ) / 2 ))
+	# Compensate for the primary display's horizontal offset.
+	xoffset=$(( \
+		${xoffset} - $( xrandr | grep primary | \
+		sed "{s/^.* connected primary .*x.*+\(.*\)+.*$/\1/g}" ) \
+		))
+	# Compensate for the primary display's vertical offset.
+	yoffset=$(( \
+		${yoffset} - $( xrandr | grep primary | \
+		sed "{s/^.* connected primary .*x.*+.*+\(.*\) (.*$/\1/g}" ) \
+		))
+
+	# Wait for the background processes to prepare the overlay image and the screenshot.
+	wait
+
+	# These two lines are what make the script so slow.
+
+	# Apply the pattern to the blurred image of the desktop.
+	convert -composite "${tmpbg}" "${tmppat}" "${tmpbg}"
+
+	# Add the overlay.
+	convert "${tmpbg}" "${overlay}" \
+		-gravity center \
+		-geometry \
+		-${xoffset}-${yoffset} \
+		-composite \
+		"${tmpbg}"
+	
+	# Start i3lock
+	# Don't show the icon and use the image.
+	# If the image does't work just lock without it.
+	# i3lock will fork and let this script exit.
+	i3lock -ui ${tmpbg} || i3lock -u
+}
+
+
+# Make sure we have a tmp directory to put files in.
+mkdir -p ${cd_to}
+
+# Running main in the background so that the script exits and can not be
+#+cancelled by pressing control - C.
+main &
+
+exit 0
+

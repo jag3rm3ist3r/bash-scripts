@@ -1,0 +1,43 @@
+#!/bin/bash
+# ________________________________
+# 
+# Name:
+# f_randomNumberWithinRange
+#
+# Usage:
+# thisDirectory=${BASH_SOURCE%/*}
+# [ -r $thisDirectory"/f_randomNumberWithinRange" ] && source $thisDirectory"/f_randomNumberWithinRange"
+# randomNumberWithinRange | randomNumberWithinRange range
+#
+# Description:
+# Function for use in other scripts.
+# Generates a random number, if a range is
+#+specified then the random number will be
+#+within that range, otherwise the output
+#+is completely random.
+# 
+# Notes:
+# I haven't added code to check if the input
+#+is null, this may cause a problem.
+# 
+# Dependencies:
+# 
+# ________________________________
+# 
+
+function randomNumberWithinRange()
+{
+	local rand=$RANDOM
+	
+	if [ $# -ne 0 ]
+	then
+	{
+		local moduloInput=$1
+		let "rand %= $moduloInput"
+	}
+	fi
+	echo "$rand"
+	return 0
+}
+
+

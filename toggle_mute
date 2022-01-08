@@ -1,0 +1,32 @@
+#!/bin/bash
+# ________________________________
+#
+# Name:
+# toggle_mute
+#
+# Author:
+# Matthew James Hulme
+#
+# Usage:
+# toggle_mute
+#
+# Description:
+# Determine if pulseaudio is muted and toggle the setting.
+#
+# Notes:
+#
+# Dependencies:
+# pacmd (pulseaudio)
+#
+# ________________________________
+#
+
+if $(pacmd list-sinks | grep muted | sed -n '1p' | grep -q yes); then
+	pacmd set-sink-mute 0 0
+	pacmd set-sink-mute 1 0
+else
+	pacmd set-sink-mute 0 1
+	pacmd set-sink-mute 1 1
+fi
+
+exit 0

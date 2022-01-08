@@ -1,0 +1,40 @@
+#!/bin/bash
+# ________________________________
+#
+# Name:
+# default_monitor_setup
+#
+# Author:
+# Matthew James Hulme
+#
+# Usage:
+# default_monitor_setup
+#
+# Description:
+# Sets up desktops with the assumption that I am not booting on another machine.
+#
+# Notes:
+#
+# Dependencies:
+# bspwm
+# feh
+#
+# ________________________________
+#
+
+
+# Setup primary monitor at correct resolution and freq.
+xrandr --output DP-2 --mode 3440x1440 --rate 120 --primary
+# Setup left montior.
+xrandr --output DP-4 --left-of DP-2 --rotate left
+# Setup right monitor
+xrandr --output HDMI-0 --right-of DP-2 #--rotate right
+# Reorder monitors in bspwm so that desktop selection starts on the
+#+primary monitor.
+bspc wm -O DP-2 DP-4 HDMI-0
+# Place the focus on the new primary monitor.
+bspc monitor -f primary
+# Set wallpaper to last set wallpaper, but not using Wal because there are multiple monitors.
+~/.fehbg.bak
+
+exit 0

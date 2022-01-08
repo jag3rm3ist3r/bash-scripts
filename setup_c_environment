@@ -1,0 +1,15 @@
+#!/bin/bash
+
+
+# Unfinished autocompiler + editor setup script.
+# Needs error handling.
+# Needs cleanup code to kill autocompiler when done.
+
+[[ $# -eq 1 ]] || exit 1
+
+cd $(dirname $1)
+
+touch $1
+tmux split-pane -hc $(dirname ${1}) autocompiler ${1} &
+tmux split-pane -hc $(dirname ${1}) nvim ${1}
+

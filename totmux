@@ -1,0 +1,46 @@
+#!/bin/bash
+# ________________________________
+#
+# Name:
+# totmux
+#
+# Author:
+# Matthew James Hulme
+#
+# Usage:
+# totmux [command to run] [target session] [target session] ...
+#
+# Arg1
+# Command to run.
+#
+# Arg2,3,4...
+# Target tmux sessions.
+#
+#
+# Description:
+# Run a command in a multiple target tmux sessions.
+#
+#
+# Notes:
+#
+#
+# Dependencies:
+# tmux
+#
+# ________________________________
+#
+
+
+
+# Exit if there are less than 2 arguments.
+[[ $# -lt 2 ]] && exit 1
+
+
+i=1
+for session in "$@"; do
+	[[ "${i}" -lt 2 ]] || tmux send-keys -t @"${session}" "${1}" ENTER
+	((i++))
+done
+
+
+exit 0

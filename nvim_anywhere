@@ -1,0 +1,62 @@
+#!/bin/bash
+# ________________________________
+#
+# Name:
+# nvim_anywhere
+#
+# Author:
+# Matthew James Hulme
+#
+# Usage:
+# nvim_anywhere
+# nvim_anywhere 1
+#
+# Description:
+# NeoVim anywhere script, for using nvim in text boxes.
+# Opens an nvim buffer then populates the clipboard with whatever is saved.
+# Starts with the current content of the clipboard already in the buffer if argument is present.
+#
+# Notes:
+#
+#
+# Dependencies:
+# xclip
+# urxvt
+# bspc (bspwm)
+# nvim
+#
+# ________________________________
+#
+
+# Constants
+tmpfile=~/tmp/nvim_anywhere_tmpfile
+touch ${tmpfile}
+
+# Variables
+fill_clip_contents=0
+[[ $# -gt 0 ]] && fill_clip_contents=$1
+
+# Remove the tmpfile if this script ends unexpectedly.
+trap "unlink ${tmpfile};bspc rule -r URxvt:* state=floating layer=above" EXIT SIGTERM SIGKILL SIGSTOP SIGINT
+
+
+# Populate the file with the current contents of the paste buffer if any number -gt 1 is passed.
+if [[ ${fill_clip_contents} -gt 0 ]]; then
+	xclip -selection clipboard -o > ${tmpfile}
+else
+	echo '' > ${tmpfile}
+fi
+
+# Oneshot rule for making the window float.
+bspc rule -a URxvt -o state=floating layer=above
+
+# Start editing tmpfile in nvim in a terminal.
+urxvt -name nvim_anywhere -e nvim -c 'startinsert' ${tmpfile}
+
+# Copy the tmpfile to the clipboard but not if the string is empty.
+[[ ! -z $(cat ${tmpfile}) ]] && \
+xclip -selection clipboard -i ${tmpfile}
+
+
+exit 0
+

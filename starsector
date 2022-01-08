@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd ${HOME}/opt/starsector/
+./starsector.sh
+

@@ -1,0 +1,72 @@
+#!/bin/bash
+
+# ________________________________
+#
+# Name:
+# reset_wallpaper_with_monitor_check
+#
+# Author:
+# Matthew James Hulme
+#
+# Usage:
+# reset_wallpaper_with_monitor_check
+#
+# Description:
+# Sets/corrects current wallpaper.
+# Will set different wallpaper if there is more than one screen present.
+#
+# Notes:
+# No longer used, this was from my ubuntu install.
+#
+# Dependencies:
+# feh
+#
+# ________________________________
+#
+
+# Check how many monitors are present then set the wallpaper appropriately.
+
+# Const
+HOME="/home/jager"
+PRIMARY_MONITOR="LVDS"
+SYMLINKS="/Pictures/Wallpapers/WallpaperSymlinks"
+image_count="1"
+
+# Remove existing link, using -L checks if it exists and is a symlink.
+[[ -L ${HOME}${SYMLINKS}/CurrentWallpaper ]] && rm ${HOME}${SYMLINKS}/CurrentWallpaper
+
+# Set wallpaper depending on how many monitors are connected.
+# Create symbolic link (-s = symbolic, Target, Link_Name)
+if [[ $(bspc query -M | wc -l) -gt 1 ]]; then
+    # Multiple monitors:
+    ln -s ${HOME}${SYMLINKS}/MultiheadWallpaper \
+    ${HOME}${SYMLINKS}/CurrentWallpaper
+else
+    # Single monitor:
+    ln -s ${HOME}${SYMLINKS}/SingleMonitorWallpaper \
+    ${HOME}${SYMLINKS}/CurrentWallpaper
+
+    ## Find the number of the currently focused desktop.
+    #desktop_focused=$(bspc query -D | grep -n "$(bspc query -D -d)" | sed "s/^\(.*\):.*$/\1/g")
+    ## Single monitor:
+    #if [[ -L ${HOME}${SYMLINKS}/SingleMonitorWallpaper${desktop_focused} ]]; then
+    #    ln -s ${HOME}${SYMLINKS}/SingleMonitorWallpaper${desktop_focused} \
+    #    ${HOME}${SYMLINKS}/CurrentWallpaper
+    #else
+    #    ln -s ${HOME}${SYMLINKS}/SingleMonitorWallpaper \
+    #    ${HOME}${SYMLINKS}/CurrentWallpaper
+    #fi
+fi
+
+# Set wallpaper using feh builtin script.
+# Broke when passed a symlink it couln't resolve or a nonexistent file.
+#${HOME}/.fehbg &
+# Set wallpaper using feh directly, targeting symlinks to the files.
+# Image count tells xinerama to turn on if we're only setting the one image.
+if [[ $image_count -gt 1 ]]; then
+    feh --bg-fill ${HOME}${SYMLINKS}/CurrentWallpaper ${HOME}${SYMLINKS}/CurrentWallpaperRight
+else
+    feh --bg-fill --no-xinerama ${HOME}${SYMLINKS}/CurrentWallpaper
+fi
+
+exit 0
