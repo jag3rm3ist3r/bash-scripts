@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo "THIS SCRIPT IS CURRENTLY BROKEN"
-exit 1
+#echo "THIS SCRIPT IS CURRENTLY BROKEN"
+#exit 1
 
 # ________________________________
 # 
@@ -48,8 +48,6 @@ cd $(dirname $1)
 PDFNAME="$(echo $1 | sed '{s/\.tex/\.pdf/g}')"
 
 # Compile every time the file is written to.
-# Currently this script will not clean up this entr instance when exiting,
-#+I need to add a trap later to make sure this is cleaned up.
 # !!!   BACKGROUND PROCESS   !!!
 echo $1 | entr -n pdflatex $1 &
 pid=$!

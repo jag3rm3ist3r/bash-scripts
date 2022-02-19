@@ -1,4 +1,6 @@
 #!/bin/sh
+
+
 # This wrapper provides automatic reloading on file modifications
 # to the pdfviewer mupdf via inotify.
 # I got this script from github from a user called "WalterSmuts"
@@ -26,6 +28,7 @@ mupdf $pdf $passthrough &
 # Track the PID of the mupdf instance.
 pid_mupdf=$!
 
+# !!! There is something wrong with this trap. !!!
 # Kill the mupdf instance if the shell script terminates.
 trap "kill ${pid_mupdf}" SIGINT SIGTERM SIGQUIT SIGKILL
 

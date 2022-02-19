@@ -1,0 +1,38 @@
+#!/bin/bash
+# ________________________________
+#
+# Name:
+# oled_brightness
+#
+# Author:
+# Matthew James Hulme
+#
+# Usage:
+# oled_brightness [brightness to add]
+#
+# Description:
+# Modifies the current brightness on an oled monitor by $1
+#
+# Notes:
+# The argument should be something like 0.1 or -0.1 just to tweak the brightness.`
+#
+# Dependencies:
+# python
+#
+# ________________________________
+#
+
+
+br=$(xrandr --verbose | grep Brightness | cut -f "2" -d " ")
+echo $br
+br=$(python -c \
+'import sys
+x = float(sys.argv[1]) + float(sys.argv[2])
+if x > 1.0: x = 1
+if x < 0.3: x = 0.3
+print(x)' \
+	$br $1)
+xrandr --output eDP-1 --brightness $br
+
+
+exit 0
