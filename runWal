@@ -1,0 +1,48 @@
+#!/bin/bash
+# ________________________________
+#
+# Name:
+# runWal
+#
+# Author:
+# Matthew James Hulme
+#
+# Usage:
+# runWal
+#
+# Description:
+# Switches wallpaper and colourscheme automatically to match.
+# Wallpaper selection is completely random from $WALLDIR.
+#
+# Notes:
+#
+# Dependencies:
+# wal
+#
+# ________________________________
+#
+
+# Run pywal, sets wallpaper and matches themes to it, then generate steam theme
+#+based on wal theme. The grep is to prevent the escape characters wal creates
+#+being written to the log file.
+HOME="/home/jager"
+WALLDIR="${HOME}/Pictures/Wallpapers/CurrentCycle/"
+echo ${WALLDIR}
+wal -q -i ${WALLDIR} | grep -v '\e'
+#wal-steam -d | grep -i error
+# Source the colors from Wal.
+. "${HOME}/.cache/wal/colors.sh"
+# Set the border colors based on Wal's colour selections.
+# Color of the border of an unfocused window.
+bspc config normal_border_color		"${color1}"
+# Color of the border of a focused window of an unfocused monitor.
+bspc config active_border_color		"${color2}"
+# Color of the border of a focused window of a focused monitor.
+bspc config focused_border_color	"${color15}"
+# Color of the node --presel-{dir,ratio} message feedback area.
+bspc config presel_feedback_color	"${color15}"
+
+
+exit 0 
+
+
