@@ -35,8 +35,8 @@ tmpbg=${cd_to}TempScrotForLockScreen.png
 tmppat=${cd_to}TempPatternForLockScreen.png
 # I might make this defined by and argument at some point, it's odd having this
 #+hard coded into the script.
-overlay="${HOME}/Pictures/Wallpapers/SYSTEMLOCKED_.png"
-pattern="${HOME}/Pictures/Wallpapers/LockPatternLarge.png"
+overlay="${HOME}/Pictures/i3Lock/SYSTEMLOCKED_.png"
+pattern="${HOME}/Pictures/i3Lock/LockPatternLarge.png"
 
 # Variables
 overallresolution="1920x1080"

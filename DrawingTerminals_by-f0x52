@@ -8,8 +8,10 @@ read -r X Y W H < <(slop -of "%x %y %w %h" -b 1 -t 0 -q)
 # Width and Height in px need to be converted to columns/rows
 # To get these magic values, make a fullscreen st, and divide your screen width
 #+by ${tput cols}, height by ${tput lines} 
-(( W /= 8 ))
-(( H /= 16 ))
+#(( W /= 8 ))
+#(( H /= 16 ))
+(( W /= 13 ))
+(( H /= 30 ))
 g=${W}x${H}+${X}+${Y}
 #echo ${g}
 bspc rule -a URxvt -o state=floating
