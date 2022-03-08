@@ -1,0 +1,64 @@
+#!/bin/bash
+# ________________________________
+#
+# Name:
+# adjust_volume
+#
+# Author:
+# Matthew James Hulme
+#
+# Usage:
+# adjust_volume +
+# adjust_volume -
+#
+# Description:
+# Adjusts volume and notifies user of current volume.
+#
+#
+# Notes:
+# 
+#
+# Dependencies:
+# dunst
+# amixer
+# pacmd (pulseaudio)
+#
+# ________________________________
+#
+
+
+case $1 in
+	-)
+		amixer sset Master 1%$1
+	;;
+	+)
+		amixer sset Master 1%$1
+	;;
+	m)
+		if [[ $(amixer sget Master | grep "Playback" | grep "off") ]]; then
+			pacmd set-sink-mute 0 off
+			amixer sset Master unmute
+		else
+			amixer sset Master mute
+		fi
+	;;
+	*)
+		echo "Error"
+	;;
+esac
+
+
+current_volume=$(amixer sget Master | grep % | sed 's/.*\[\(.*%\)\].*/\1/g')
+volume_string=$current_volume
+
+if [[ $(amixer sget Master| grep "Playback" | grep "off") ]]; then
+	volume_string="Muted"
+fi
+
+# Tell the user the current volume.
+dunstify "Volume: $volume_string" -a "System" -r 123 \
+	-h "int:value:$current_volume"
+
+
+exit 0 
+

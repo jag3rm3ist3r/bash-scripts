@@ -1,3 +1,4 @@
+# DEPRECEATED
 #!/bin/bash
 # ________________________________
 #
@@ -26,13 +27,13 @@ if $(pacmd list-sinks | grep muted | sed -n '1p' | grep -q yes); then
 	pacmd set-sink-mute 1 0
 	pacmd set-sink-mute 3 0
 	pacmd set-sink-mute 4 0
-	notify-send "Un-muted"
+	dunstify "Volume: Un-muted" -a "System" -r 123
 else
 	pacmd set-sink-mute 0 1
 	pacmd set-sink-mute 1 1
 	pacmd set-sink-mute 3 1
 	pacmd set-sink-mute 4 1
-	notify-send "Muted"
+	dunstify "Volume: Muted" -a "System" -r 123
 fi
 
 

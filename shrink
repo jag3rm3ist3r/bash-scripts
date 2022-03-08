@@ -1,0 +1,9 @@
+#!/bin/bash
+
+if [[ $# -gt 0 ]] ; then
+	xdotool selectwindow windowsize ${1}% ${2}%
+else
+	xdotool selectwindow windowsize 50% 50%
+fi
+
+exit 0

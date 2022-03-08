@@ -24,7 +24,8 @@
 
 
 br=$(xrandr --verbose | grep Brightness | cut -f "2" -d " ")
-echo $br
+
+
 br=$(python -c \
 'import sys
 x = float(sys.argv[1]) + float(sys.argv[2])
@@ -32,7 +33,17 @@ if x > 1.0: x = 1
 if x < 0.3: x = 0.3
 print(x)' \
 	$br $1)
+
 xrandr --output eDP-1 --brightness $br
+
+br=$(python -c \
+'import sys
+import math
+x = float(sys.argv[1]) * float(sys.argv[2])
+print(math.floor(x))' \
+	$br 100)
+
+dunstify "Brightness: $br%" -a "System" -r 67 -h "int:value:$br"
 
 
 exit 0

@@ -1,23 +1,18 @@
 #!/bin/bash
 
 
-# This script is currently broken by tmux renaming the window immediately after
-#+creation, I will finish fixing it another day.
-# I can set how many cols and rows I have but I need to set that based on the
-#+monitor size.
-# I might be able to make use of one shot bspwm rules.
-# Mind that the class name is URxvt not urxvt.
-exit 1
+# Opens a dropdown terminal at the top of the screen.
 
-termheight='40%'
-wid=`xdotool search --class urxvtq | head -n 1`
+
+termheight='30%'
+wid=`xdotool search --classname urxvtq | head -n 1`
 
 if [ -z "${wid}" ]; then
-	urxvt -name urxvtq -geometry 50x10 -e tmux
+	urxvt -name urxvtq -geometry 50x10 -e tmux new-session -s urxvtq &
 	while [ -z $wid ]; do
-		wid=`xdotool search --name "urxvtq" | head -n 1`
+		wid=`xdotool search --classname "urxvtq" | head -n 1`
 	done
-elif [ -z "$(xdotool search --onlyvisible --class urxvtq 2>/dev/null | head -n 1)" ]; then
+elif [ -z "$(xdotool search --onlyvisible --classname urxvtq 2>/dev/null | head -n 1)" ]; then
 	xdotool windowmap --sync "${wid}"
 else
 	xdotool windowunmap --sync "${wid}"

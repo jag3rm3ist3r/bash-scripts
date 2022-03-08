@@ -34,7 +34,7 @@ rofi -run-shell-command "{terminal} \
 -font "Terminus (TTF) Medium 12" -bw 0 -threads 0 \
 -theme ~/.cache/wal/colors-rofi-dark.rasi \
 -theme-str '*{text-color: #FFFFFF;}' \
--lines 16 -fixed-num-lines 16 -width 50 -padding 100 -location 0 -regex -show $1
+-scroll-method 0 -matching regex -show $1
 
 
 exit 0

@@ -1,0 +1,2 @@
+urxvt -g 127x31 -e tmux &
+exit 0
