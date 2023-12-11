@@ -24,18 +24,26 @@
 
 
 # Setup primary monitor at correct resolution and freq.
-xrandr --output DP-2 --mode 3440x1440 --rate 120 --primary
+#xrandr --output DP-2 --mode 3440x1440 --rate 120 --primary
+xrandr --output DP1 --mode 3440x1440 --above eDP1 --rate 120 --primary
 # Setup left montior.
-xrandr --output DP-4 --left-of DP-2 --rotate left
+#xrandr --output DP-4 --left-of DP-2 --rotate left
 # Setup right monitor
-xrandr --output HDMI-0 --right-of DP-2 #--rotate right
+#xrandr --output HDMI-0 --right-of DP-2 #--rotate right
 # Reorder monitors in bspwm so that desktop selection starts on the
 #+primary monitor.
-bspc wm -O DP-2 DP-4 HDMI-0
+#bspc wm -O DP-2 DP-4 HDMI-0
+bspc wm -O DP1 eDP1
 # Place the focus on the new primary monitor.
 bspc monitor -f primary
 # Set wallpaper to last set wallpaper, but not using Wal because there are multiple monitors.
-~/.fehbg.bak
+#~/.fehbg.bak
+# Wal seems to work with muliple monitors now?
+~/Documents/Code/Bash/runWal
+# Tell bspwm to make some virtual desktops on the new monitor.
+bspc monitor ^1 -d '1' '2' '3' '4' '5' '6' '7' '8' '9' '10'
 
+# Adopt any orphans created while running this script.
+bspc wm -o
 
 exit 0

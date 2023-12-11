@@ -8,8 +8,12 @@ termheight='30%'
 wid=`xdotool search --classname urxvtq | head -n 1`
 
 if [ -z "${wid}" ]; then
-	urxvt -name urxvtq -geometry 50x10 -e tmux new-session -s urxvtq &
-	while [ -z $wid ]; do
+	echo "Creating new terminal instance, " \
+		"this should only happen the first time this script is run."
+	urxvt -name urxvtq -geometry 50x10 -e tmux new-session -As urxvtq &
+	echo "Searching for window that was just created."
+	while [ -z ${wid} ]; do
+		echo -n "."
 		wid=`xdotool search --classname "urxvtq" | head -n 1`
 	done
 elif [ -z "$(xdotool search --onlyvisible --classname urxvtq 2>/dev/null | head -n 1)" ]; then
@@ -17,9 +21,10 @@ elif [ -z "$(xdotool search --onlyvisible --classname urxvtq 2>/dev/null | head 
 else
 	xdotool windowunmap --sync "${wid}"
 fi
-xdotool windowsize --sync "${wid}" 100% ${termheight}
-xdotool windowmove --sync "${wid}" -1 -1
-xdotool windowfocus --sync "${wid}"
+
+xdotool windowsize --sync "${wid}" 100% ${termheight} && echo "Setting scale."
+xdotool windowmove --sync "${wid}" -1 -1 && echo "Setting window position."
+xdotool windowfocus --sync "${wid}" && echo "Setting window focus."
 
 exit 0
 

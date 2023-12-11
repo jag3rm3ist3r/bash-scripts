@@ -26,15 +26,29 @@
 # Constants
 HOME="/home/jager"
 WALLDIR="${HOME}/Pictures/Wallpapers/CurrentCycle/"
+BACKGROUND="000000"
+# For future reference, the reason I don't change URxvt transparency
+#+feature on the fly is that it doesn't update well with wal or picom.
+ALPHA="60"
 
+# Variables
+#alpha="100"
 
 # Tell the user where the wallpapers are being selected from.
 #echo ${WALLDIR}
 
+#if [[ $(cat /sys/class/power_supply/AC/online) -eq 1 ]]; then
+	## AC adapter is plugged in.
+	#alpha="50"
+#else
+	## AC adapter is unplugged.
+	#alpha="100"
+#fi
+
 
 # The grep is to prevent the escape characters wal creates
 #+being written to the log file.
-wal -q -b 000000 -i ${WALLDIR} --iterative | grep -v '\e'
+wal -q -a ${ALPHA} -b ${BACKGROUND} -i ${WALLDIR} --iterative > /dev/null 2>&1
 
 
 # Run wal-steam to generate a coloursceme for use with steam.

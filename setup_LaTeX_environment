@@ -13,6 +13,7 @@
 #
 # Usage:
 # setup_LaTeX_environment [filename.tex]
+# setup_LaTeX_environment [filename.tex] [filename.bib]
 #
 # Description:
 # Opens a .tex document next to a live preview of the pdf next to it.
@@ -36,8 +37,6 @@
 # Make sure there are arguments.
 [[ $# -eq 0 ]] && echo 'Not enough arguments.' && exit 1
 
-# If we don't make the file exist first then things break.
-touch $1
 
 # pdflatex likes to dump it's output in the current directory so we're going to
 #+the directory that the file is in to consolidate the mess that pdflatex makes.
@@ -48,24 +47,53 @@ cd $(dirname $1)
 PDFNAME="$(echo $1 | sed '{s/\.tex/\.pdf/g}')"
 
 # Compile every time the file is written to.
+# For some reason I have two installs of texlive and the path is not working.
+touch $1
+# I'm hoping deleting the .aux file now and then will fix the lockups.
 # !!!   BACKGROUND PROCESS   !!!
-echo $1 | entr -n pdflatex $1 &
-pid=$!
-echo "entr PID: ${pid}"
+echo $1 | entr -n /opt/texlive/2021/bin/x86_64-linux/pdflatex $1 || rm ./*.aux &
 # We need to make sure the entr instance is killed after we're done with it.
-trap "kill ${pid}" EXIT SIGTERM SIGINT
+pid1=$!
+echo "entr PID: ${pid1}"
+trap "kill ${pid1}" EXIT SIGTERM SIGINT
+
+
+if [[ $# -eq 2 ]]; then
+	touch $2
+	# !!!   BACKGROUND PROCESS   !!!
+	echo $2 | entr -n /opt/texlive/2021/bin/x86_64-linux/biber \
+		$(basename --suffix='.bib' $2) &
+	# We need to make sure the entr instance is killed after we're done with it.
+	pid2=$!
+	echo "entr PID: ${pid2}"
+	trap "kill ${pid2}" EXIT SIGTERM SIGINT
+fi
+
 
 # Open the file in a split pane in tmux, on the right.
-tmux split-window -hc "$(dirname $1)" nvim $1
+# cd was called earlier to set PWD to the correct value.
+tmux split-window -h -l 60% -c "$(pwd)" nvim -p $@
 
 # Make sure the editor is in the middle of the screen,
 #+with the viewer to the right and the compiler to the left.
 bspc node --presel-dir east
-bspc node --presel-ratio 0.7
+bspc node --presel-ratio 0.6
 
 # This sleep line is here to stop pdflatex interfering with mupdf,
-#+a delay of 0.1 seems to be sufficient.
-sleep 0.1
+#+a delay of 0.1 seems to be sufficient on my desktop computer.
+sleep 1
+
+fixMuPDFSize() {
+	# Fix window sizing.
+	sleep 0.5
+	xdotool key "super+t"
+	xdotool key "W"
+	xdotool key "super+shift+t"
+	xdotool key "w"
+}
+fixMuPDFSize &
+
+
 # It is worth noting here that mupdf doesn't seem to like being used with entr,
 #+this is why it's being run through the mupdf.inotify script.
 # This is a script that I found to update the contents of mupdf whenever the
@@ -74,3 +102,6 @@ sleep 0.1
 # Symlink:		~/bin/mupdf.inotify
 mupdf.inotify ${PDFNAME}
 
+wait
+
+exit 0
