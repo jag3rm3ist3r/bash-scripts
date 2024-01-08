@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# This script works out which versions of linux are installed and reconfigures
+#+them all.
+
+xbps-query -s linux | \
+awk '{print $2}' | \
+grep -E 'linux[0-9]' | \
+grep -v headers | \
+xargs sudo xbps-install -yf 
+

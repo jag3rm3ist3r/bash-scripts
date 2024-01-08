@@ -67,6 +67,7 @@ function main(){
 		sed "{s/^.* primary \(.*\)x\(.*\)+.*+.* .*$/\1x\2/g}"\
 		)
 
+	#echo "Taking screenshot."
 	# !!! BACKGROUND THREAD !!!
 	# Take a screenshot.
 	# Blur the screenshot.
@@ -80,12 +81,13 @@ function main(){
 		-vf "gblur=sigma=16" \
 		"${tmpbg}" &
 
+	#echo "Tiling overlay."
 	# !!! BACKGROUND THREAD !!!
 	# Create the pattern with the correct resolution.
 	convert -size "${overallresolution}" tile:"${pattern}" "${tmppat}" &
 
 	# Extract the x and y values.
-	overallx=$(echo "$overallresolution" | sed "{s/\(.*\)x.*/\1/g}")
+	overallx=$(echo "$overallresolution" | sed "{s/\(.*\)x.*/\1/g}") 
 	overally=$(echo "$overallresolution" | sed "{s/.*x\(.*\)/\1/g}")
 	primaryx=$(echo "$primaryresolution" | sed "{s/\(.*\)x.*/\1/g}")
 	primaryy=$(echo "$primaryresolution" | sed "{s/.*x\(.*\)/\1/g}")
@@ -110,9 +112,11 @@ function main(){
 
 	# These two lines are what make the script so slow.
 
+	#echo "Applying blur."
 	# Apply the pattern to the blurred image of the desktop.
 	convert -composite "${tmpbg}" "${tmppat}" "${tmpbg}"
 
+	#echo "Compositing overlay."
 	# Add the overlay.
 	convert "${tmpbg}" "${overlay}" \
 		-gravity center \
@@ -135,6 +139,7 @@ mkdir -p ${cd_to}
 # Running main in the background so that the script exits and can not be
 #+cancelled by pressing control - C.
 main &
+
 
 exit 0
 

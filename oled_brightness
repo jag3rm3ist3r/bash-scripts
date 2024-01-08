@@ -34,7 +34,7 @@ if x < 0.3: x = 0.3
 print(x)' \
 	$br $1)
 
-xrandr --output eDP-1 --brightness $br
+xrandr --output eDP1 --brightness $br
 
 br=$(python -c \
 'import sys

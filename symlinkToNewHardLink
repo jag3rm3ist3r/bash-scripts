@@ -1,0 +1,46 @@
+#!/bin/bash
+# ________________________________
+#
+# Name:
+# symlinkToNewHardLink
+#
+# Author:
+# Matthew James Hulme
+#
+# Usage:
+# symlinkToNewHardLink \
+# [ $1 : original hard link location] \
+# [ $2 : new hard link location]
+#
+# Description:
+# Moves a file to a new location and creates a symlink in the original location
+#+pointing to the new one.
+#
+# Notes:
+#
+# Dependencies:
+#
+# ________________________________
+#
+
+# Must be two arguments.
+[[ $# -lt 2 ]] && exit 1
+[[ ! -f $1 ]] && exit 1
+
+originalPathname=$(realpath $1)
+#echo originalPathname $originalPathname
+
+newPathname=$(realpath $2)
+#echo newPathname $newPathname
+
+#originalBasename=$(basename $1)
+#echo originalBasename $originalBasename
+
+
+mv $originalPathname $newPathname
+
+ln -s $newPathname $originalPathname
+
+
+exit 0 
+
